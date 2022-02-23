@@ -1,64 +1,66 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.11;
 
 contract ERC20 {
     string public name = "Crypton";
     string public symbol = "CRYP";
     uint8 public decimals = 18;
-    uint256 public totalSupply;
+    uint256 public totalSupply = 1000000 * 10**decimals;
+    address public owner;
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
 
-    function transfer() {
-        
+    constructor() {
+        owner = msg.sender;
     }
 
-    function transferFrom() {
-
+    function transfer(address _to, uint256 _amount) external returns (bool status) {
+        require(_amount > 0, "Amount must be greater than 0");
+        balanceOf[msg.sender] -= _amount;
+        balanceOf[_to] += _amount;
+        return true;
     }
 
-    function approve() {
-
+    function transferFrom(address _from, address _to, uint256 _amount) external returns (bool status) {
+        require(_amount > 0, "Amount must be greater than 0");
+        allowance[_from][msg.sender] -= _amount;
+        balanceOf[_from] -= _amount;
+        balanceOf[_to] += _amount;
+        return true;
     }
 
-    function increaseAllowance() {
-
+    function approve(address _spender, uint256 _amount) external returns (bool status) {
+        require(_amount > 0, "Amount must be greater than 0");
+        allowance[msg.sender][_spender] = _amount;
+        return true;
     }
 
-    function decreaseAllowance() {
-
+    function increaseAllowance(address _spender, uint256 _amount) external returns (bool status) {
+        require(_amount > 0, "Amount must be greater than 0");
+        allowance[msg.sender][_spender] += _amount;
+        return true;
     }
 
-    function mint() {
-
+    function decreaseAllowance(address _spender, uint256 _amount) external returns (bool status) {
+        require(_amount > 0, "Amount must be greater than 0");
+        uint256 subAmount = allowance[msg.sender][_spender] - _amount;
+        require(subAmount > 0, "Total allowance must be greater than 0");
+        allowance[msg.sender][_spender] -= _amount;
+        return true;
     }
 
-    function burn() {
-        
+    function mint(uint256 _amount) external onlyOwner {
+        require(_amount > 0, "Amount must be greater than 0");
+        totalSupply += _amount;
     }
 
-    // VIEW FUNCTIONS
-    function name() public view returns (string) {
-
+    function burn(uint256 _amount) external onlyOwner {
+        require(_amount > 0, "Amount must be greater than 0");
+        totalSupply -= _amount;
     }
 
-    function symbol() public view returns (string) {
-
-    }
-
-    function decimals() public view returns (uint8) {
-
-    }
-
-    function balanceOf(address user) public view returns (uint256) {
-
-    }
-
-    function totalSupply() public view returns (uint256) {
-
-    }
-
-    function allowance(address owner, address spender) public view returns (uint256) {
-
+    modifier onlyOwner() {
+        require(owner == msg.sender, "Caller is not the owner");
+        _;
     }
 }
