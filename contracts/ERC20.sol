@@ -2,6 +2,8 @@
 pragma solidity ^0.8.11;
 
 contract ERC20 {
+    // TODO add events
+
     string public name = "Crypton";
     string public symbol = "CRYP";
     uint8 public decimals = 18;
@@ -12,51 +14,64 @@ contract ERC20 {
 
     constructor() {
         owner = msg.sender;
+        balanceOf[msg.sender] = totalSupply;
     }
 
     function transfer(address _to, uint256 _amount) external returns (bool status) {
         require(_amount > 0, "Amount must be greater than 0");
         balanceOf[msg.sender] -= _amount;
         balanceOf[_to] += _amount;
+        // emit Transfer(msg.sender, recipient, amount);
         return true;
     }
 
     function transferFrom(address _from, address _to, uint256 _amount) external returns (bool status) {
         require(_amount > 0, "Amount must be greater than 0");
+        require(allowance[_from][msg.sender] >= _amount, "Transfer amount exceeds allowance");
         allowance[_from][msg.sender] -= _amount;
         balanceOf[_from] -= _amount;
         balanceOf[_to] += _amount;
+        // emit Transfer(sender, recipient, amount);
         return true;
     }
 
     function approve(address _spender, uint256 _amount) external returns (bool status) {
         require(_amount > 0, "Amount must be greater than 0");
         allowance[msg.sender][_spender] = _amount;
+        // emit Approval(msg.sender, spender, amount);
         return true;
     }
 
     function increaseAllowance(address _spender, uint256 _amount) external returns (bool status) {
         require(_amount > 0, "Amount must be greater than 0");
         allowance[msg.sender][_spender] += _amount;
+        // emit Approval(msg.sender, spender, amount);
         return true;
     }
 
     function decreaseAllowance(address _spender, uint256 _amount) external returns (bool status) {
         require(_amount > 0, "Amount must be greater than 0");
-        uint256 subAmount = allowance[msg.sender][_spender] - _amount;
-        require(subAmount > 0, "Total allowance must be greater than 0");
+        uint256 currentAllowance = this.allowance(msg.sender, _spender);
+        require(currentAllowance >= _amount, "Total allowance must be greater than 0");
         allowance[msg.sender][_spender] -= _amount;
+        // emit Approval(msg.sender, spender, amount);
         return true;
     }
 
     function mint(uint256 _amount) external onlyOwner {
         require(_amount > 0, "Amount must be greater than 0");
+        balanceOf[msg.sender] += _amount;
         totalSupply += _amount;
+        // emit Transfer(address(0), msg.sender, amount);
     }
 
     function burn(uint256 _amount) external onlyOwner {
         require(_amount > 0, "Amount must be greater than 0");
+        uint256 accountBalance = balanceOf[msg.sender];
+        require(accountBalance >= _amount, "Burn amount exceeds balance");
+        balanceOf[msg.sender] -= _amount;
         totalSupply -= _amount;
+        // emit Transfer(msg.sender, address(0), amount);
     }
 
     modifier onlyOwner() {
