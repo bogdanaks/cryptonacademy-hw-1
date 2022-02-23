@@ -2,11 +2,15 @@
 pragma solidity ^0.8.11;
 
 contract ERC20 {
-    constructor() {
-    }
+    string public name = "Crypton";
+    string public symbol = "CRYP";
+    uint8 public decimals = 18;
+    uint256 public totalSupply;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
     function transfer() {
-
+        
     }
 
     function transferFrom() {
