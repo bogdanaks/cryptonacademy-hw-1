@@ -7,6 +7,10 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 
+import "./tasks/approve";
+import "./tasks/transfer";
+import "./tasks/transferFrom";
+
 dotenv.config();
 
 const config: HardhatUserConfig = {
