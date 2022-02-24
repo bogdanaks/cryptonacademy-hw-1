@@ -6,6 +6,7 @@ async function main() {
   await erc20.deployed();
 
   console.log("ERC20 deployed to:", erc20.address);
+  console.log("Owner address is: ", await erc20.owner());
 }
 
 main().catch((error) => {
